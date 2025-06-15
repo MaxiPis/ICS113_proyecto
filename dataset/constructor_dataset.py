@@ -42,8 +42,8 @@ costo_mismo_pueblito = 10
 costo_distinto_pueblito = 100
 costo_arreglo = 100  # Arreglo de canerias
 dinero_recibido = 250
-periodos_sin_mantenimiento = 5
-presupuesto_inicial = 70
+periodos_sin_mantenimiento = 1
+presupuesto_inicial = 120
 
 ######################### NO MODIFICAR #########################
 

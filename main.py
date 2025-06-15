@@ -514,6 +514,20 @@ def construir_modelo():
                     modelo.addConstr(x[f, n, s, t] <= g(f, n, s),
                                      name=f"R15_fuentes_maximas_{f}_{n}_{s}_{t}")
 
+    #! Restricciones nuevas
+    # R16 Sólo es posible romper cañerías que estan instaladas
+    for t in semanas:
+        for s in comunas:
+            for a in range(len(canerias[s])):
+                modelo.addConstr(v[a, s, t] >= u[a, s, t],
+                                 name=f"R16_{a}_{s}_{t}")
+
+    # R17 Sólo es posible arreglar cañerías instaladas
+    for t in semanas:
+        for s in comunas:
+            for a in range(len(canerias[s])):
+                modelo.addConstr(l[a, s, t] <= v[a, s, t],
+                                 name=f"R17_{a}_{s}_{t}")
     # Funcion Objetivo
 
     modelo.setObjective(
