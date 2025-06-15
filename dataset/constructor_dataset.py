@@ -1,5 +1,10 @@
 import csv
 import os
+
+"""
+No ejecutar este código directamente desde \dataset.
+Este código se ejecuta desde main.py
+"""
 ##################### PARAMETROS MODIFICABLES #####################
 
 semanas = 2
@@ -38,7 +43,8 @@ costo_distinto_pueblito = 100
 costo_arreglo = 100  # Arreglo de canerias
 dinero_recibido = 250
 periodos_sin_mantenimiento = 5
-presupuesto_inicial = 150
+presupuesto_inicial = 70
+
 ######################### NO MODIFICAR #########################
 
 cant_canerias = nodos_totales * (nodos_totales-1)
@@ -73,6 +79,12 @@ nodos_demanda = divisor_terrenos(terreno_demanda, pueblitos)
 
 def leer_csv(ruta):
     lista = []
+    carpeta = 'dataset'
+    ruta = os.path.join(carpeta, ruta)
+
+    # Crear carpeta si no existe
+    os.makedirs(carpeta, exist_ok=True)
+
     with open(ruta, newline='') as f:
         reader = csv.reader(f)
         next(reader)  # Encabezado
@@ -250,6 +262,12 @@ def construir_csv(nombre_archivo, encabezados, datos):
     construir_csv("salida.csv", ["Nombre", "Edad"], [
                   ["Ana", 30], ["Luis", 25]])
     """
+    carpeta = 'dataset'
+    nombre_archivo = os.path.join(carpeta, nombre_archivo)
+
+    # Crear carpeta si no existe
+    os.makedirs(carpeta, exist_ok=True)
+
     try:
         with open(nombre_archivo, mode='w', newline='', encoding='utf-8') as archivo_csv:
             escritor = csv.writer(archivo_csv)

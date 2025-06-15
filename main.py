@@ -2,10 +2,12 @@ import pandas as pd
 from gurobipy import Model, GRB, quicksum
 import os
 import csv
+from dataset.constructor_dataset import run
 
+# ==== CREACIÓN DE LOS DATASET ======
+run()
 ruta_carpeta = "dataset"
-# Parametros
-#################
+
 # Diccionario general de datos
 datos = {}
 # === INFORMACION ===
@@ -29,7 +31,7 @@ datos["flujo_fuente"] = pd.read_csv(ruta_carpeta+"/"+"flujo_fuentes.csv")
 datos["perdidas_canerias"] = pd.read_csv(
     ruta_carpeta+"/"+"perdidas_canerias.csv")
 datos["perdidas_fuentes"] = pd.read_csv(
-    ruta_carpeta+"/"+"perdidas_fuentes.csv")  # Falta
+    ruta_carpeta+"/"+"perdidas_fuentes.csv")
 
 # === PARÁMETROS ECONÓMICOS ===
 datos["dinero_recibido"] = pd.read_csv(ruta_carpeta+"/"+"dinero_recibido.csv")
@@ -139,8 +141,10 @@ def phi():
     return int(df.iloc[0, 0])
 
 
-######## CONSTRUCCION DE LISTAS Y DICCIONARIOS#########
 def pruebas():
+    """
+    Llamar esta función para ver los conjunto de datos generados.
+    """
     # =====================
     # === Dimensiones ===
     # =====================
@@ -307,23 +311,9 @@ def construir_modelo():
                 # Se encuentra rota la caneria a en la comuna s en la semana t
                 u[ind, ss, tt] = modelo.addVar(
                     vtype=GRB.BINARY, name=f"u_{ind}_{ss}_{tt}")
-
-    # H = {}
-    # for s in semanas:
-    #     print("Smeana", s)
-    #     canerias_de_s = canerias[0]
-    #     for n in terrenos[s]:
-    #         print("N es", n)
-    #         H[n] = modelo.addVar(
-    #             vtype=GRB.CONTINUOUS, lb=0, name=f"wfegrh,jhmgny_{ind}_{ss}_{tt}")
-
     modelo.update()
 
-    # BIG M
-    M = 100000000000000
-
-    # Restricciones
-
+    # ========== RESTRICCIONES ==========
     # R1 Ecuacion de flujo
     for t in semanas:
         for s in comunas:
@@ -416,14 +406,7 @@ def construir_modelo():
                 for a in range(len(canerias_de_s)):
                     modelo.addConstr(v[a, s, t] <= q[a, s, t] + v[a, s, t-1],
                                      name=f"R5_2_instalada_{a}_{s}_{t}")
-
-    # # También esta es una nueva restricción
-    # for t in semanas:
-    #     for s in comunas:
-    #         canerias_de_s = canerias[s]
-    #         for a in range(len(canerias_de_s)):
-    #             modelo.addConstr(v[a, s, t] <= v[a, s, t+1],
-    #                              name=f"R5_instalada_{a}_{s}_{t}")
+    #! Fin de las restricciones nuevas
 
     # R6 Solo puede operar una caneria que esta instalada
     for s in comunas:
@@ -467,22 +450,23 @@ def construir_modelo():
                      name="R9_flujo_caja_inicial")
 
     # R10 Flujo de caja para tiempos posteriores
-    for t in range(1, len(semanas)):
-        modelo.addConstr(p[t-1]
-                         # + ingresos esta semana:
-                         + e(t) * quicksum(d(n, s, t-1)
-                                           for s in comunas for n in terrenos[s])
-                         # – coste de construir cañerías en t-1
-                         - quicksum(c_1(a, s) * q[a, s, t-1]
-                                    for s in comunas for a in range(len(canerias[s])))
-                         # – coste de construir fuentes en t-1
-                         - quicksum(c(f, s) * w[f, n, s, t-1]
-                                    for s in comunas for f in fuentes for n in terrenos[s])
-                         # – coste de reparar cañerías en t-1
-                         - quicksum(c_2(a, s) * l[a, s, t-1]
-                                    for s in comunas for a in range(len(canerias[s])))
-                         == p[t],
-                         name=f"R10_flujo_caja_{t}")
+    for t in semanas:
+        if t != 0:
+            modelo.addConstr(p[t-1]
+                             # + ingresos esta semana:
+                             + e(t) * quicksum(d(n, s, t)
+                                               for s in comunas for n in terrenos[s])
+                             # – coste de construir cañerías en t
+                             - quicksum(c_1(a, s) * q[a, s, t]
+                                        for s in comunas for a in range(len(canerias[s])))
+                             # – coste de construir fuentes en t
+                             - quicksum(c(f, s) * w[f, n, s, t]
+                                        for s in comunas for f in fuentes for n in terrenos[s])
+                             # – coste de reparar cañerías en t
+                             - quicksum(c_2(a, s) * l[a, s, t]
+                                        for s in comunas for a in range(len(canerias[s])))
+                             == p[t],
+                             name=f"R10_flujo_caja_{t}")
 
     # R11 No se permite saldo negativo
     for t in semanas:
@@ -547,8 +531,6 @@ def resolver_modelo(modelo):
     """
     Esta función debe llamar al solver de Gurobi para resolver el modelo.
     """
-
-    ##
     modelo.optimize()
 
     if modelo.status == GRB.OPTIMAL:
@@ -563,7 +545,6 @@ def resolver_modelo(modelo):
         print("El modelo es no acotado.")
     else:
         print(f"Estado del modelo: {modelo.status} (no óptimo)")
-    ##
     return modelo
 
 
@@ -599,119 +580,12 @@ def guardar_resultados(model):
                 escritor.writerow([nombre, valor])
 
 
-def imprimir_resultados(model):
-    """
-    Esta función debe imprimir de forma clara el valor óptimo (con su unidad)
-    y la cantidad de productos producidos de cada tipo.
-    """
-    # Variables de impresion si son verdaderas se imprimiran en los resultados
-    imp_x = True
-    imp_y = True
-    imp_w = True
-
-    # Si deseea no ver en la impresion alguna de estas variables descomente la linea asociada a esa variable o comente para ver el valor de esa variable, si estaba descomentada
-    # imp_x = False
-    # imp_y = False
-    # imp_w = False
-
-    # Resultados
-    valor_optimo = model.ObjVal
-    print("\n######################\n##### Resultados #####\n######################\n")
-    print(f"El valor optimo, es  {valor_optimo}\n")
-    # PROBANDO
-    cantidad_de_comunidades = int(datos["dimensiones"].iloc[0]["comunidades"])
-    cantidad_de_semanas = int(datos["dimensiones"].iloc[0]["semanas"])
-    cantidad_de_terrenos = int(datos["dimensiones"].iloc[0]["terrenos"])
-    cantidad_de_fuentes = int(datos["dimensiones"].iloc[0]["fuentes"])
-    cantidad_de_canerias = int(datos["dimensiones"].iloc[0]["canerias"])
-
-    comunas = [e for e in range(cantidad_de_comunidades)]
-    semanas = [e for e in range(cantidad_de_semanas)]
-    fuentes = [e for e in range(cantidad_de_fuentes)]
-
-    # Terrenos por comuna desde datos
-    terrenos = {
-        c: list(datos["terrenos"][datos["terrenos"]["comuna"] == c]["terreno"])
-        for c in comunas
-    }
-    # Cañerías por comuna como tuplas (origen, destino)
-    canerias = {
-        c: [(int(f["origen"]), int(f["destino"]))
-            for _, f in datos["canerias"][datos["canerias"]["comuna"] == c].iterrows()]
-        for c in comunas
-    }
-
-    # Imprimimos las cañerías y su tipo
-
-    # for tt in semanas:
-    #     print(f"-------------SEMANA {tt}: CAÑERÍAS ")
-    #     for ss in comunas:
-    #         for aa in canerias[ss]:
-    #             for variable in model.getVars():
-    #                 ind = canerias[ss].index(aa)
-    #                 if variable.varName == f"y_{ind}_{ss}_{tt}":
-    #                     print(f"y_{ind}_{ss}_{tt}", variable.x)
-
-    # for tt in semanas:
-    #     print(f"-------------SEMANA {tt} fUENTES ")
-    #     for ss in comunas:
-    #         for nn in terrenos[ss]:
-    #             for ff in fuentes:
-    #                 for variable in model.getVars():
-    #                     if variable.varName == f"x_{ff}_{nn}_{ss}_{tt}":
-    #                         print(f"x_{ff}_{nn}_{ss}_{tt}", variable.x)
-
-    # Imprimo la cantidad de dinero final
-    # for tt in semanas:
-    #     for variable in model.getVars():
-    #         if variable.varName == f"p_{tt}":
-    #             print(f"p_{tt}", variable.x)
-
-    # Imprimo las fuentes nuevas
-    # for tt in semanas:
-    #     print(f"-------------SEMANA {tt} fUENTES NUEVAS ")
-    #     for ss in comunas:
-    #         for nn in terrenos[ss]:
-    #             for ff in fuentes:
-    #                 for variable in model.getVars():
-    #                     if variable.varName == f"w_{ff}_{nn}_{ss}_{tt}":
-    #                         print(f"w_{ff}_{nn}_{ss}_{tt}", variable.x)
-
-    # for tt in semanas:
-    #     print(f"-------------SEMANA {tt} CANERIAS ARREGLADAS ")
-    #     for ss in comunas:
-    #         for aa in canerias[ss]:
-    #             for variable in model.getVars():
-    #                 ind = canerias[ss].index(aa)
-    #                 if variable.varName == f"l_{ind}_{ss}_{tt}":
-    #                     print(f"l_{ind}_{ss}_{tt}", variable.x)
-
-    # for tt in semanas:
-    #     print(f"-------------SEMANA {tt} CANERIAS ROTAS ")
-    #     for ss in comunas:
-    #         for aa in canerias[ss]:
-    #             for variable in model.getVars():
-    #                 ind = canerias[ss].index(aa)
-    #                 if variable.varName == f"u_{ind}_{ss}_{tt}":
-    #                     print(f"u_{ind}_{ss}_{tt}", variable.x)
-
-    # for t in semanas:
-    #     print(f"-------------SEMANA {tt} fUENTES ")
-    #     for s in comunas:
-    #         canerias_de_s = canerias[s]
-    #         for a in range(len(canerias_de_s)):
-
-
 def main():
-
+    # pruebas()
     model = construir_modelo()
     resultado = resolver_modelo(model)
-
     guardar_resultados(resultado)
 
 
 if __name__ == "__main__":
     main()
-    # print(pruebas())
-    # construir_modelo()
-    # pruebas()
