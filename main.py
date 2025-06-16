@@ -419,7 +419,7 @@ def construir_modelo():
         for s in comunas:
             for a in range(len(canerias[s])):
                 modelo.addConstr(
-                    u[a, s, t]
+                    u[a, s, t + phi()]
                     >= r[a, s, t]
                     - quicksum(l[a, s, tau]
                                for tau in range(t, t + phi())),
