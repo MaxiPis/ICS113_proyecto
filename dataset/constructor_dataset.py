@@ -6,30 +6,23 @@ No ejecutar este código directamente desde \dataset.
 Este código se ejecuta desde main.py
 """
 ##################### PARAMETROS MODIFICABLES #####################
-
 semanas = 6
 comunas = 1
 nodos_totales = 5
 pueblitos = 1  # Separación del la cantidad de nodos
-
 # Nodos de una comuna: pueblito al que pertenece y [Nodos correspondientes]
 terreno_oferta = [0, 2]
 terreno_demanda = [1, 3, 4]
-
 tipos_fuentes = ["Tranque"]
-
 # Variables para el máximo de fuentes
 numero_fuentes = 1
-
 # Indica el máximo de fuentes que se puede construir según el tipo
 diccionario_fuentes = {
     0: 1,
 }
-
 diccionario_suministro_fuentes = {
     0: 120
 }
-
 diccionario_perdida_fuentes = {
     0: 0.1,
 }
@@ -45,17 +38,10 @@ dinero_recibido = 250  # No lo estamos tocando por ahora
 periodos_sin_mantenimiento = 3
 presupuesto_inicial = 100
 
-######################### NO MODIFICAR #########################
-
-cant_canerias = nodos_totales * (nodos_totales-1)
-cant_canerias /= 2
-cant_canerias = int(cant_canerias)
-
-
-# Esta parte hace la separación por pueblitos
 # terreno_oferta = [0, 2, 5, 7, 12, 14]
 # pueblitos = 3
 # nodos_oferta = [[0, 2], [5, 7], [12, 14]]
+# No modificar pero mover a parametros.py
 
 
 def divisor_terrenos(lista, pueblitos):
@@ -71,8 +57,21 @@ def divisor_terrenos(lista, pueblitos):
 
 
 nodos_oferta = divisor_terrenos(terreno_oferta, pueblitos)
-
 nodos_demanda = divisor_terrenos(terreno_demanda, pueblitos)
+
+
+######################### NO MODIFICAR #########################
+
+cant_canerias = nodos_totales * (nodos_totales-1)
+cant_canerias /= 2
+cant_canerias = int(cant_canerias)
+
+
+# Esta parte hace la separación por pueblitos
+# terreno_oferta = [0, 2, 5, 7, 12, 14]
+# pueblitos = 3
+# nodos_oferta = [[0, 2], [5, 7], [12, 14]]
+
 
 ################################ FUNCIONES#########################
 
@@ -109,7 +108,6 @@ def canerias_csv():
         if not e in l2:
             l2.append(e)
     for indice in range(len(l2)):
-        # print(indice,l2[indice])
         l2[indice] = l2[indice] + [indice]
     return l2
 
