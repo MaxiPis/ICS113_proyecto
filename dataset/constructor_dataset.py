@@ -7,7 +7,7 @@ Este código se ejecuta desde main.py
 """
 ##################### PARAMETROS MODIFICABLES #####################
 
-semanas = 2
+semanas = 5
 comunas = 1
 nodos_totales = 5
 pueblitos = 1  # Separación del la cantidad de nodos
@@ -40,10 +40,10 @@ costos_fuentes = 20
 # Costo de la construcción de cañería
 costo_mismo_pueblito = 10
 costo_distinto_pueblito = 100
-costo_arreglo = 100  # Arreglo de canerias
-dinero_recibido = 250
-periodos_sin_mantenimiento = 1
-presupuesto_inicial = 120
+costo_arreglo = 5  # Arreglo de canerias
+dinero_recibido = 250  # No lo estamos tocando por ahora
+periodos_sin_mantenimiento = 2
+presupuesto_inicial = 100
 
 ######################### NO MODIFICAR #########################
 

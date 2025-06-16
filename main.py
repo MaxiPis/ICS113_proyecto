@@ -361,18 +361,6 @@ def construir_modelo():
             modelo.addConstr(quicksum(q[a, s, t] for t in semanas) <= 1,
                              name=f"R3_activacion_{a}_{s}")
 
-    # # R4 Primera compra – presupuesto inicial
-    modelo.addConstr(
-        # Costo de instalar todas las fuentes en t=0
-        quicksum(c(f, s) * w[f, n, s, 0]
-                 for s in comunas for f in fuentes for n in terrenos[s])
-        # + Costo de construir todas las cañerías en t=0
-        + quicksum(c_1(a, s) * q[a, s, 0]
-                   for s in comunas for a in range(len(canerias[s])))
-        # ≤ presupuesto
-        <= I_0(),
-        name="R4_presupuesto_inicial")
-
     # R5 Caneria previamente instalada, sigue instala
     for t in semanas:
         for s in comunas:
@@ -433,12 +421,11 @@ def construir_modelo():
                 modelo.addConstr(
                     u[a, s, t]
                     >= r[a, s, t]
-                    - quicksum(l[a, s, t]
-                               for t in range(t, t + phi() + 1)),
+                    - quicksum(l[a, s, tau]
+                               for tau in range(t, t + phi())),
                     name=f"R8_condicion_ruptura_{a}_{s}_{t}")
 
     # R9 Flujo de caja
-    # asumiento que los tiempos parten en 0
     modelo.addConstr(I_0()
                      - quicksum(c_1(a, s)*q[a, s, 0]
                                 for s in comunas for a in range(len(canerias[s])))
@@ -446,6 +433,9 @@ def construir_modelo():
                                 for s in comunas for f in fuentes for n in terrenos[s])
                      + e(0) * quicksum(d(n, s, 0)
                                        for s in comunas for n in terrenos[s])
+                     # – coste de reparar cañerías en t
+                     - quicksum(c_2(a, s) * l[a, s, 0]
+                                for s in comunas for a in range(len(canerias[s])))
                      == p[0],
                      name="R9_flujo_caja_inicial")
 
@@ -528,8 +518,8 @@ def construir_modelo():
             for a in range(len(canerias[s])):
                 modelo.addConstr(l[a, s, t] <= v[a, s, t],
                                  name=f"R17_{a}_{s}_{t}")
-    # Funcion Objetivo
 
+    # Funcion Objetivo
     modelo.setObjective(
         quicksum(alpha(a, s) * y[a, s, t]
                  for t in semanas for s in comunas for a in range(len(canerias[s])))
