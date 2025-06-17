@@ -7,7 +7,7 @@ Este código se ejecuta desde main.py
 """
 ##################### PARAMETROS MODIFICABLES #####################
 semanas = 6
-comunas = 1
+comunas = 2
 nodos_totales = 5
 pueblitos = 1  # Separación del la cantidad de nodos
 # Nodos de una comuna: pueblito al que pertenece y [Nodos correspondientes]
@@ -80,7 +80,7 @@ def leer_csv(ruta):
     lista = []
     carpeta = 'dataset'
     ruta = os.path.join(carpeta, ruta)
-
+    #ruta = os.path.join(ruta)
     # Crear carpeta si no existe
     os.makedirs(carpeta, exist_ok=True)
 
@@ -95,33 +95,34 @@ def leer_csv(ruta):
 
 
 def canerias_csv():
-    l = []
     l2 = []
-    for c in range(pueblitos):
+    for comuna in range(comunas): 
+        conexiones = []
         for i in range(nodos_totales):
             for j in range(nodos_totales):
-                if not i == j:
-                    l.append([c, i, j])
-    for caneria_index in range(len(l)):
-        l[caneria_index][1:] = sorted(l[caneria_index][1:])
-    for e in l:
-        if not e in l2:
-            l2.append(e)
-    for indice in range(len(l2)):
-        l2[indice] = l2[indice] + [indice]
+                if i != j:
+                    conexiones.append([i, j])
+        conexiones_unicas = []
+        for con in conexiones:
+            con_ordenada = sorted(con)
+            if con_ordenada not in conexiones_unicas:
+                conexiones_unicas.append(con_ordenada)
+        for id_local, (origen, destino) in enumerate(conexiones_unicas):
+            l2.append([comuna, origen, destino, id_local])
     return l2
 
 
 def demanda_csv(demanda):
     l = []
     for t in range(semanas):
-        for c in range(pueblitos):
+        for c in range(comunas): 
             for i in range(nodos_totales):
                 if i in terreno_oferta:
                     l.append([c, i, t, 0])
                 else:
                     l.append([c, i, t, demanda])
     return l
+
 
 
 def flujo_caneria_csv(flujo_max):
@@ -262,6 +263,7 @@ def construir_csv(nombre_archivo, encabezados, datos):
     """
     carpeta = 'dataset'
     nombre_archivo = os.path.join(carpeta, nombre_archivo)
+    #nombre_archivo = os.path.join(nombre_archivo)
 
     # Crear carpeta si no existe
     os.makedirs(carpeta, exist_ok=True)
