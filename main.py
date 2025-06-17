@@ -263,16 +263,7 @@ def construir_modelo():
     l = {}
     u = {}
 
-    # Variable de cumplimiento de demanda
-    z = {}
-
     modelo = Model()
-
-    # Para verificar que se cumpla la demanda (variable Z)
-    for t in semanas:
-        for s in comunas:
-            for n in terrenos[s]:
-                z[n, s, t] = modelo.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=1, name=f"z_{n}_{s}_{t}")
 
     for tt in semanas:
         # Dinero al final de la semana t
@@ -351,8 +342,7 @@ def construir_modelo():
                     quicksum((1-beta(f))*m(f)*x[f, n, s, t] for f in fuentes)
                     + quicksum((1-alpha(a_in, s)) * y[a_in, s, t] for a_in in canerias_entrada)
                     - quicksum((y[a_out, s, t] for a_out in canerias_salida))
-                    # Añadí variable Z que represente la proporción de demanda cumplida
-                    >= z[n, s, t] * d(s, n, t),
+                    >= d(s, n, t),
                     name=f"R1_flujo_satisfactorio_{s}_{n}_{t}"
                 )
 
@@ -438,17 +428,11 @@ def construir_modelo():
 
     # R9 Flujo de caja
     modelo.addConstr(I_0()
-                     - quicksum(c_1(a, s)*q[a, s, 0]
-                                for s in comunas for a in range(len(canerias[s])))
-                     - quicksum(c(f, s)*w[f, n, s, 0]
-                                for s in comunas for f in fuentes for n in terrenos[s])   
-                     # Flujo de caja en funcion de variable Z
-                     + e(t) * quicksum(z[n, s, t] * d(n, s, t) for s in comunas for n in terrenos[s])
-                     #+ e(0) * quicksum(d(n, s, 0) for s in comunas for n in terrenos[s])
-                     
+                     - quicksum(c_1(a, s)*q[a, s, 0] for s in comunas for a in range(len(canerias[s])))
+                     - quicksum(c(f, s)*w[f, n, s, 0] for s in comunas for f in fuentes for n in terrenos[s])
+                     + e(0) * quicksum(d(n, s, 0) for s in comunas for n in terrenos[s])
                      # – coste de reparar cañerías en t
-                     - quicksum(c_2(a, s) * l[a, s, 0]
-                                for s in comunas for a in range(len(canerias[s])))
+                     - quicksum(c_2(a, s) * l[a, s, 0] for s in comunas for a in range(len(canerias[s])))
                      == p[0],
                      name="R9_flujo_caja_inicial")
 
@@ -462,7 +446,7 @@ def construir_modelo():
                              # pero no hay ninguna condición que active ese ingreso sólo cuando efectivamente se cumple
                              # si el modelo no cumple con nada, aún así el ingreso se está considerando igual.
                              # Flujo de caja en funcion de variable Z
-                             + e(t) * quicksum(z[n, s, t] * d(n, s, t) for s in comunas for n in terrenos[s])
+                             + e(t) * quicksum(d(n, s, t) for s in comunas for n in terrenos[s])
                              #+ e(t) * quicksum(d(n, s, t) for s in comunas for n in terrenos[s])
                              
                              # – coste de construir cañerías en t
