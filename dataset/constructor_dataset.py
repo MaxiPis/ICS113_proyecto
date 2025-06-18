@@ -13,28 +13,39 @@ pueblitos = 1  # Separación del la cantidad de nodos
 # Nodos de una comuna: pueblito al que pertenece y [Nodos correspondientes]
 terreno_oferta = [0, 2]
 terreno_demanda = [1, 3, 4]
-tipos_fuentes = ["Tranque"]
+tipos_fuentes = ["Tranque", "Pozo", "Plantas de Filtración"]
 # Variables para el máximo de fuentes
-numero_fuentes = 1
+numero_fuentes = 3
 # Indica el máximo de fuentes que se puede construir según el tipo
 diccionario_fuentes = {
-    0: 1,
+    0: 2,
+    1: 4,
+    2: 1
 }
 diccionario_suministro_fuentes = {
-    0: 120
+    0: 120,
+    1: 80,
+    2: 160
 }
 diccionario_perdida_fuentes = {
     0: 0.1,
+    1: 0.2,
+    2: 0.4
 }
 demanda_nodo = 40
 flujo_caneria_maximo = 120
 porcentaje_caneria = 0.2
-costos_fuentes = 20
+costos_fuentes = {
+    0: 120,
+    1: 80,
+    2: 180
+
+}
 # Costo de la construcción de cañería
 costo_mismo_pueblito = 10
 costo_distinto_pueblito = 100
 costo_arreglo = 5  # Arreglo de canerias
-dinero_recibido = 10  # No lo estamos tocando por ahora
+dinero_recibido = 250  # No lo estamos tocando por ahora
 periodos_sin_mantenimiento = 3
 presupuesto_inicial = 100
 
@@ -80,7 +91,7 @@ def leer_csv(ruta):
     lista = []
     carpeta = 'dataset'
     ruta = os.path.join(carpeta, ruta)
-    # ruta = os.path.join(ruta)
+    #ruta = os.path.join(ruta)
     # Crear carpeta si no existe
     os.makedirs(carpeta, exist_ok=True)
 
@@ -96,7 +107,7 @@ def leer_csv(ruta):
 
 def canerias_csv():
     l2 = []
-    for comuna in range(comunas):
+    for comuna in range(comunas): 
         conexiones = []
         for i in range(nodos_totales):
             for j in range(nodos_totales):
@@ -115,13 +126,14 @@ def canerias_csv():
 def demanda_csv(demanda):
     l = []
     for t in range(semanas):
-        for c in range(comunas):
+        for c in range(comunas): 
             for i in range(nodos_totales):
                 if i in terreno_oferta:
                     l.append([c, i, t, 0])
                 else:
                     l.append([c, i, t, demanda])
     return l
+
 
 
 def flujo_caneria_csv(flujo_max):
@@ -174,12 +186,13 @@ def costos_cañeria(costo_mismo_pueblito, costo_distinto_pueblito):
     return costos
 
 
-def costos_tipos_fuente(precio):
+def costos_tipos_fuente(diccionario_precios):
     costos = []
     indice = 0
     for comuna in range(comunas):
         for tipo in tipos_fuentes:
             id = tipos_fuentes.index(tipo)
+            precio = diccionario_precios[id]
             costos.append([id, comuna, precio])
             indice += 1
     return costos
@@ -187,6 +200,7 @@ def costos_tipos_fuente(precio):
 
 def construir_maximo_fuentes():
     lista = []
+    retornan = []
     for comuna in range(comunas):
         for fuente in range(numero_fuentes):
             for terreno in range(nodos_totales):
@@ -198,6 +212,7 @@ def construir_maximo_fuentes():
                     sublista = [fuente, terreno, comuna, 0]
 
                 lista.append(sublista)
+    print(lista)
     return lista
 
 
@@ -233,7 +248,7 @@ def flujo_fuente_crear():
 
 def perdidas_fuente_crear():
     lista = []
-    for fuente in range(numero_fuentes):
+    for fuente in range(len(tipos_fuentes)):
         lista.append([fuente, diccionario_perdida_fuentes[fuente]])
     return lista
 
@@ -262,7 +277,7 @@ def construir_csv(nombre_archivo, encabezados, datos):
     """
     carpeta = 'dataset'
     nombre_archivo = os.path.join(carpeta, nombre_archivo)
-    # nombre_archivo = os.path.join(nombre_archivo)
+    #nombre_archivo = os.path.join(nombre_archivo)
 
     # Crear carpeta si no existe
     os.makedirs(carpeta, exist_ok=True)
