@@ -7,7 +7,7 @@ Este código se ejecuta desde main.py
 """
 ##################### PARAMETROS MODIFICABLES #####################
 semanas = 6
-comunas = 2
+comunas = 3
 nodos_totales = 5
 pueblitos = 1  # Separación del la cantidad de nodos
 # Nodos de una comuna: pueblito al que pertenece y [Nodos correspondientes]
@@ -45,7 +45,7 @@ costos_fuentes = {
 costo_mismo_pueblito = 10
 costo_distinto_pueblito = 100
 costo_arreglo = 5  # Arreglo de canerias
-dinero_recibido = 250  # No lo estamos tocando por ahora
+dinero_recibido = 10  # Con 10 el modelo sigue siendo factible pero no tiene plata suficiente pa comprar todas las cañerias y así permite q se vayan rompiendo
 periodos_sin_mantenimiento = 3
 presupuesto_inicial = 100
 
@@ -212,7 +212,6 @@ def construir_maximo_fuentes():
                     sublista = [fuente, terreno, comuna, 0]
 
                 lista.append(sublista)
-    print(lista)
     return lista
 
 
