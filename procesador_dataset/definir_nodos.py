@@ -3,7 +3,7 @@ import sys
 import csv
 import math
 from random import randint, seed, uniform
-from parametros import demanda_nodo, desviacion_demanda
+from parametros import demanda_nodo, desviacion_demanda, semanas
 from parametros import proporcion_arreglo, porcentaje_perdida_caneria, desviacion_perdida
 import os
 
@@ -70,14 +70,16 @@ for comuna_idx, image_path in enumerate(imagenes):
                 elif event.key == pygame.K_r:
                     current_label = 'R'
                 elif event.key == pygame.K_s:
-                    for local_id, punto in enumerate(puntos_comuna):
-                        x, y, label = punto
-                        todos_los_puntos.append((x, y, label, comuna_idx))
-                        lista_terrenos.append((comuna_idx, local_id))
-                        demanda = 0 if label == 'B' else demanda_nodo + \
-                            randint(-desviacion_demanda, desviacion_demanda)
-                        lista_demanda.append(
-                            (comuna_idx, local_id, 0, demanda))
+                    for s in range(semanas):
+                        for local_id, punto in enumerate(puntos_comuna):
+                            x, y, label = punto
+                            todos_los_puntos.append((x, y, label, comuna_idx))
+                            lista_terrenos.append((comuna_idx, local_id))
+                            demanda = 0 if label == 'B' else demanda_nodo + \
+                                randint(-desviacion_demanda,
+                                        desviacion_demanda)
+                            lista_demanda.append(
+                                (comuna_idx, local_id, s, demanda))
 
                     # === CALCULAR CANERÍAS ===
                     id_caneria_local = 0
