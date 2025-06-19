@@ -5,7 +5,7 @@ import csv
 from dataset.constructor_dataset import run
 
 # ==== CREACIÓN DE LOS DATASET ======
-run()
+# run()
 ruta_carpeta = "dataset"
 
 # Diccionario general de datos
@@ -56,9 +56,7 @@ def d(n, s, t):
 
 
 def k(a, s):
-    df = datos["flujos_canerias"]
-    resultado = df[(df.iloc[:, 0] == a) & (df.iloc[:, 1] == s)]
-    return float(resultado.iloc[0, 2])
+    return float(160)
 
 # m(f): flujo máximo fuente
 
