@@ -5,7 +5,9 @@ from parametros import tipos_fuentes, diccionario_fuentes, diccionario_suministr
 from parametros import diccionario_suministro_fuentes, diccionario_perdida_fuentes, periodos_sin_mantenimiento, presupuesto_inicial
 from parametros import flujo_caneria_maximo, dinero_recibido, costos_fuentes
 from parametros import demanda_nodo, porcentaje_perdida_caneria, costo_arreglo, costo_instalar_caneria
-
+from parametros import desviacion_arreglo, desviacion_instalar_caneria
+from random import randint, seed
+seed(1000)
 ######################### Calculos previos #########################
 
 cant_canerias = nodos_totales * (nodos_totales-1)
@@ -92,7 +94,9 @@ def costos_cañeria():
     canerias_lista = []
     for c in range(comunas):
         for a in range(cant_canerias):
-            costo_caneria = costo_instalar_caneria
+            costo_caneria = costo_instalar_caneria + \
+                randint(-desviacion_instalar_caneria,
+                        desviacion_instalar_caneria)
             canerias_lista.append([a, c, costo_caneria])
 
     return canerias_lista
@@ -132,7 +136,9 @@ def costo_arreglar_canerias(cant_canerias, comunas, costo_arreglo):
 
     for comu in range(comunas):
         for caneria in range(cant_canerias):
-            lista_final.append([caneria, comu, costo_arreglo])
+            costo = costo_arreglo + \
+                randint(-desviacion_arreglo, desviacion_arreglo)
+            lista_final.append([caneria, comu, costo])
     return lista_final
 
 
