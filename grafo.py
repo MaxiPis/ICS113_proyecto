@@ -105,7 +105,7 @@ font = pygame.font.SysFont(None, 32)
 # Posiciones circulares
 center = (WIDTH // 2, HEIGHT // 2)
 radius = HEIGHT // 2.35
-node_radius = 18  # ! Este cambie
+node_radius = 15  # ! Este cambie
 
 positions = []
 for i in range(nodos_totales):

@@ -6,7 +6,7 @@ from parametros import diccionario_suministro_fuentes, diccionario_perdida_fuent
 from parametros import flujo_caneria_maximo, dinero_recibido, costos_fuentes
 from parametros import demanda_nodo, porcentaje_perdida_caneria, costo_arreglo, costo_instalar_caneria
 from parametros import desviacion_arreglo, desviacion_instalar_caneria
-from random import randint, seed
+from random import randint, seed, choice
 seed(1000)
 ######################### Calculos previos #########################
 
@@ -54,7 +54,7 @@ def canerias_csv():
     return l2
 
 
-def demanda_csv(demanda):
+def demanda_csv(demanda_lista):
     l = []
     for t in range(semanas):
         for c in range(comunas):
@@ -62,6 +62,7 @@ def demanda_csv(demanda):
                 if i in nodos_oferta:
                     l.append([c, i, t, 0])
                 else:
+                    demanda = choice(demanda_lista)
                     l.append([c, i, t, demanda])
     return l
 
