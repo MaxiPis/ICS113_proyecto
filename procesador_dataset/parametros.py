@@ -6,8 +6,8 @@ comunas = 3
 nodos_totales = 5
 # pueblitos = 1  # Separación del la cantidad de nodos
 # Nodos de una comuna: pueblito al que pertenece y [Nodos correspondientes]
-nodos_demanda = [0, 2]
-nodos_oferta = [1, 3, 4]
+nodos_demanda = [1, 3, 4]
+nodos_oferta = [0, 2]
 dinero_recibido = 10
 periodos_sin_mantenimiento = 3
 presupuesto_inicial = 100
@@ -24,10 +24,10 @@ porcentaje_perdida_caneria = 0.2
 desviacion_perdida = 0  # ! No hay desviación
 costo_maximo_instalar = 10
 # Costo de la construcción de cañería
-# costo_mismo_pueblito = 10
+costo_instalar_caneria = 10
 # costo_distinto_pueblito = 100
-costo_maximo_arreglar = 5  # Arreglo de canerias
-
+# costo_maximo_arreglar = 5  # Arreglo de canerias
+costo_arreglo = 5
 
 # =================== FUENTES ===============
 tipos_fuentes = ["Tranque", "Pozo", "Plantas de Filtración"]

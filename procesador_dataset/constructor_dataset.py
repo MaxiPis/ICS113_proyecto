@@ -4,7 +4,7 @@ from parametros import semanas, comunas, nodos_totales, nodos_demanda, nodos_ofe
 from parametros import tipos_fuentes, diccionario_fuentes, diccionario_suministro_fuentes
 from parametros import diccionario_suministro_fuentes, diccionario_perdida_fuentes, periodos_sin_mantenimiento, presupuesto_inicial
 from parametros import flujo_caneria_maximo, dinero_recibido, costos_fuentes
-
+from parametros import demanda_nodo, porcentaje_perdida_caneria, costo_arreglo, costo_instalar_caneria
 
 ######################### Calculos previos #########################
 
@@ -88,30 +88,14 @@ def terrenos_csv():
     return l
 
 
-def costos_cañeria(costo_mismo_pueblito, costo_distinto_pueblito):
-    lista = leer_csv('canerias.csv')
-    costos = []
-    for l in lista:
-        id_nodo = l[3]
-        comuna = l[0]
-        nodo_origen = l[1]
-        nodo_destino = l[2]
-        for pueblito in nodos_demanda:
-            if nodo_origen in pueblito:
-                pueblito_nodo_origen = nodos_demanda.index(pueblito)
-            if nodo_destino in pueblito:
-                pueblito_nodo_destino = nodos_demanda.index(pueblito)
-        for pueblito in nodos_oferta:
-            if nodo_origen in pueblito:
-                pueblito_nodo_origen = nodos_oferta.index(pueblito)
-            if nodo_destino in pueblito:
-                pueblito_nodo_destino = nodos_oferta.index(pueblito)
-        if pueblito_nodo_origen == pueblito_nodo_destino:
-            costos.append([id_nodo, comuna, costo_mismo_pueblito])
-        else:
-            costos.append([id_nodo, comuna, costo_distinto_pueblito])
+def costos_cañeria():
+    canerias_lista = []
+    for c in range(comunas):
+        for a in range(cant_canerias):
+            costo_caneria = costo_instalar_caneria
+            canerias_lista.append([a, c, costo_caneria])
 
-    return costos
+    return canerias_lista
 
 
 def costos_tipos_fuente(diccionario_precios):
@@ -227,36 +211,36 @@ def construir_csv(nombre_archivo, encabezados, datos):
 
 
 def run():
-    # construir_csv("canerias.csv", [
-    #               "comuna", "origen", "destino", "ID"], canerias_csv())
+    construir_csv("canerias.csv", [
+                  "comuna", "origen", "destino", "ID"], canerias_csv())
 
-    # construir_csv("costo_instalar_canerias.csv", [
-    #    "ID", "comuna", "costo"], costos_cañeria(costo_mismo_pueblito, costo_distinto_pueblito))
+    construir_csv("costo_instalar_canerias.csv", [
+        "ID", "comuna", "costo"], costos_cañeria())
 
     construir_csv("costo_fuentes.csv", [
                   "ID", "comuna", "costo"], costos_tipos_fuente(costos_fuentes))
 
-    # construir_csv("demanda.csv",
-    #               ["comuna", "terreno", "tiempo", "demanda"],
-    #               demanda_csv(demanda_nodo)
-    #               )
+    construir_csv("demanda.csv",
+                  ["comuna", "terreno", "tiempo", "demanda"],
+                  demanda_csv(demanda_nodo)
+                  )
 
     construir_csv("flujos_canerias.csv",
                   ["caneria", "comuna", "flujo_maximo"],
                   flujo_caneria_csv(flujo_caneria_maximo)
                   )
 
-    # construir_csv("perdidas_canerias.csv",
-    #               ["caneria", "comuna", "porcentaje_perdida"],
-    #               perdidas_canerias_csv(porcentaje_caneria))
+    construir_csv("perdidas_canerias.csv",
+                  ["caneria", "comuna", "porcentaje_perdida"],
+                  perdidas_canerias_csv(porcentaje_perdida_caneria))
 
-    # construir_csv("terrenos.csv",
-    #              ["comuna", "terreno"],
-    #              terrenos_csv())
+    construir_csv("terrenos.csv",
+                  ["comuna", "terreno"],
+                  terrenos_csv())
 
-    # construir_csv("costo_arreglar_canerias.csv",
-    #               ["caneria", "comuna", "costo_arreglo"],
-    #               costo_arreglar_canerias(cant_canerias, comunas, costo_arreglo))
+    construir_csv("costo_arreglar_canerias.csv",
+                  ["caneria", "comuna", "costo_arreglo"],
+                  costo_arreglar_canerias(cant_canerias, comunas, costo_arreglo))
 
     construir_csv("dimensiones.csv", ["comunas", "semanas", "terrenos", "fuentes", "canerias"],
                   dimensiones_crear(comunas, semanas, nodos_totales, numero_fuentes, cant_canerias))

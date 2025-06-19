@@ -1,0 +1,17 @@
+\ Model _copy
+\ LP format - for model browsing. Use MPS format to capture full model detail.
+Minimize
+ 
+Subject To
+ R1_flujo_1_0_5: 108 x_0_0_1_5 + 64 x_1_0_1_5 + 96 x_2_0_1_5 - y_0_1_5
+   - y_1_1_5 - y_2_1_5 - y_3_1_5 >= 40
+ R15_fuentes_maximas_0_0_1_5: x_0_0_1_5 <= 0
+ R15_fuentes_maximas_1_0_1_5: x_1_0_1_5 <= 0
+ R15_fuentes_maximas_2_0_1_5: x_2_0_1_5 <= 0
+Bounds
+ x_0_0_1_5 free
+ x_1_0_1_5 free
+ x_2_0_1_5 free
+Generals
+ x_0_0_1_5 x_1_0_1_5 x_2_0_1_5
+End
