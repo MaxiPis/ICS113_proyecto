@@ -2,11 +2,10 @@ import pandas as pd
 from gurobipy import Model, GRB, quicksum
 import os
 import csv
-from dataset.constructor_dataset import run
+# from dataset.constructor_dataset import run
 
 # ==== CREACIÓN DE LOS DATASET ======
-# run()
-ruta_carpeta = "dataset"
+ruta_carpeta = os.path.join("procesador_dataset", "dataset")
 
 # Diccionario general de datos
 datos = {}
