@@ -24,6 +24,8 @@ lista_canas = []
 lista_costos = []
 lista_costos_arreglo = []
 lista_perdidas = []
+lista_fuentes_maximas = []
+lista_flujo_canerias = []
 
 for comuna_idx, image_path in enumerate(imagenes):
     # === ZOOM: aplicar solo en comuna 0 ===
@@ -65,7 +67,12 @@ for comuna_idx, image_path in enumerate(imagenes):
                         todos_los_puntos.append((x, y, label, comuna_idx))
                         lista_terrenos.append((comuna_idx, local_id))
                         demanda = 0 if label == 'B' else 40 + randint(-5, 5)
-                        lista_demanda.append((comuna_idx, local_id, 0, demanda))
+                        for t in range(5):
+                            lista_demanda.append((comuna_idx, local_id, t, demanda))
+                            lista_demanda.sort(key=lambda x: (x[2], x[0]))
+                        for fuentes in range(3):
+                            fuentes_maximas = 0 if label == 'R' else randint(1, 3)
+                            lista_fuentes_maximas.append((fuentes, local_id, comuna_idx, fuentes_maximas))
 
                     # === CALCULAR CANERÍAS ===
                     id_caneria_local = 0
@@ -96,6 +103,7 @@ for comuna_idx, image_path in enumerate(imagenes):
                             lista_costos.append((id_caneria_local, comuna_idx, costo))
                             lista_costos_arreglo.append((id_caneria_local, comuna_idx, arreglo))
                             lista_perdidas.append((id_caneria_local, comuna_idx, porcentaje_perdida))
+                            lista_flujo_canerias.append((id_caneria_local,comuna_idx, randint(130, 150)))
                             id_caneria_local += 1
                             idx += 1
 
@@ -126,17 +134,26 @@ with open('datasets/canerias.csv', 'w', newline='') as f:
     csv.writer(f).writerow(['comuna', 'origen', 'destino', 'ID'])
     csv.writer(f).writerows(lista_canas)
 
-with open('datasets/costo_instalacion.csv', 'w', newline='') as f:
+with open('datasets/costo_instalar_canerias.csv', 'w', newline='') as f:
     csv.writer(f).writerow(['ID', 'comuna', 'costo'])
     csv.writer(f).writerows(lista_costos)
 
-with open('datasets/costo_arreglar_caneria.csv', 'w', newline='') as f:
+with open('datasets/costo_arreglar_canerias.csv', 'w', newline='') as f:
     csv.writer(f).writerow(['ID', 'comuna', 'costo'])
     csv.writer(f).writerows(lista_costos_arreglo)
 
 with open('datasets/perdidas_canerias.csv', 'w', newline='') as f:
     csv.writer(f).writerow(['caneria', 'comuna', 'porcentaje_perdida'])
     csv.writer(f).writerows(lista_perdidas)
+
+with open('datasets/maximo_fuentes.csv', 'w', newline='') as f:
+    csv.writer(f).writerow(['Fuente', 'Terreno', 'Comuna', 'Maximo'])
+    csv.writer(f).writerows(lista_fuentes_maximas)
+
+with open('datasets/flujos_canerias.csv', 'w', newline='') as f:
+    csv.writer(f).writerow(['caneria', 'comuna', 'flujo_maximo'])
+    csv.writer(f).writerows(lista_flujo_canerias)
+
 
 pygame.quit()
 sys.exit()
