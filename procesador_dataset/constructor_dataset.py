@@ -54,7 +54,8 @@ def canerias_csv():
     return l2
 
 
-def demanda_csv(demanda_lista):
+def demanda_csv(demanda):
+
     l = []
     for t in range(semanas):
         for c in range(comunas):
@@ -62,7 +63,7 @@ def demanda_csv(demanda_lista):
                 if i in nodos_oferta:
                     l.append([c, i, t, 0])
                 else:
-                    demanda = choice(demanda_lista)
+                    # demanda = choice(demanda_lista)
                     l.append([c, i, t, demanda])
     return l
 

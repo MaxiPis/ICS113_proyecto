@@ -3,19 +3,20 @@
 # ============= GENERAL ================
 semanas = 12
 comunas = 3
-nodos_totales = 45
+nodos_totales = 35
 # pueblitos = 1  # Separación del la cantidad de nodos
 # Nodos de una comuna: pueblito al que pertenece y [Nodos correspondientes]
 nodos_demanda = [1, 3, 4, 6, 8, 9, 10, 11, 13, 14, 16, 18, 19,
-                 21, 22, 23, 24, 25, 26, 28, 29, 30, 32, 33, 34, 35, 37, 38, 39, 40, 41, 42, 43, 44]
-nodos_oferta = [0, 2, 5, 7, 12, 15, 17, 20,  27, 31, 36]
+                 21, 22, 23, 24, 25, 26, 28, 29, 30, 31, 32, 34]
+nodos_oferta = [0, 2, 5, 7, 12, 15, 17, 20,  27, 33]
 dinero_recibido = 1584000
 # desviacion_dinero_recibido = 500000
 periodos_sin_mantenimiento = 3
 presupuesto_inicial = 2640000
 
+
 # ================ DEMANDA ============
-demanda_nodo = [90, 70, 50, 175, 72, 140, 95, 105]
+demanda_nodo = 65
 
 # ============== CAÑERÍAS ============
 flujo_caneria_maximo = 195
@@ -34,14 +35,14 @@ desviacion_instalar_caneria = 0  # ! No hay desviación
 tipos_fuentes = ["Desalinizadora", "Tratamiento de aguas grises", "Tranques"]
 
 costos_fuentes = {
-    0: 475200000,
+    0: 4752000,
     1: 2112000,
-    2: 316800000
+    2: 3168000
 }
 # Indica el máximo de fuentes que se puede construir según el tipo
 diccionario_fuentes = {
-    0: 1,
-    1: 2,
+    0: 4,
+    1: 4,
     2: 4
 }
 diccionario_suministro_fuentes = {
@@ -52,5 +53,5 @@ diccionario_suministro_fuentes = {
 diccionario_perdida_fuentes = {
     0: 0.1,
     1: 0.04,
-    2: 0.17
+    2: 0.1
 }
