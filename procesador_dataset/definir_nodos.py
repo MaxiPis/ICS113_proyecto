@@ -5,6 +5,7 @@ import math
 from random import randint, seed, uniform
 from parametros import demanda_nodo, desviacion_demanda, semanas
 from parametros import proporcion_arreglo, porcentaje_perdida_caneria, desviacion_perdida
+from parametros import costo_maximo_arreglar, costo_maximo_instalar
 import os
 
 # Semilla para setear lo aleatorio
@@ -30,6 +31,23 @@ lista_canas = []
 lista_costos = []
 lista_costos_arreglo = []
 lista_perdidas = []
+
+
+def eliminar_repetidos(lista):
+    lista_limpia = []
+    for i in range(len(lista)):
+        if lista_limpia == []:
+            # Caso inicial
+            lista_limpia.append(lista[i])
+        else:
+            visto = False
+            for j in range(len(lista_limpia)):
+                if lista_limpia[j] == lista[i]:
+                    visto = True
+            if visto == False:
+                lista_limpia.append(lista[i])
+    return lista_limpia
+
 
 for comuna_idx, image_path in enumerate(imagenes):
     # === ZOOM: aplicar solo en comuna 0 ===
@@ -90,6 +108,7 @@ for comuna_idx, image_path in enumerate(imagenes):
                             x1, y1 = puntos_comuna[i][0], puntos_comuna[i][1]
                             x2, y2 = puntos_comuna[j][0], puntos_comuna[j][1]
                             distancia_px = math.hypot(x2 - x1, y2 - y1)
+
                             distancia_real = distancia_px * \
                                 escala_comunas[comuna_idx]
                             distancias_reales.append(distancia_real)
@@ -112,6 +131,10 @@ for comuna_idx, image_path in enumerate(imagenes):
 
                             lista_canas.append(
                                 (comuna_idx, i, j, id_caneria_local))
+                            if costo >= costo_maximo_instalar:
+                                costo = costo_maximo_instalar
+                            if arreglo >= costo_maximo_arreglar:
+                                arreglo = costo_maximo_arreglar
                             lista_costos.append(
                                 (id_caneria_local, comuna_idx, costo))
                             lista_costos_arreglo.append(
@@ -135,6 +158,11 @@ for comuna_idx, image_path in enumerate(imagenes):
 
         pygame.display.flip()
 
+lista_terrenos = eliminar_repetidos(lista_terrenos)
+
+# lista_demanda = [list(map(int, fila.split(','))) for fila in lista_demanda]
+lista_demanda = sorted(lista_demanda, key=lambda x: x[2])
+
 # === GUARDAR ARCHIVOS ===
 with open('dataset/terrenos.csv', 'w', newline='') as f:
     csv.writer(f).writerow(['comuna', 'terreno'])
@@ -153,7 +181,7 @@ with open('dataset/costo_instalar_canerias.csv', 'w', newline='') as f:
     csv.writer(f).writerows(lista_costos)
 
 with open('dataset/costo_arreglar_canerias.csv', 'w', newline='') as f:
-    csv.writer(f).writerow(['ID', 'comuna', 'costo'])
+    csv.writer(f).writerow(['caneria', 'comuna', 'costo_arreglo'])
     csv.writer(f).writerows(lista_costos_arreglo)
 
 with open('dataset/perdidas_canerias.csv', 'w', newline='') as f:

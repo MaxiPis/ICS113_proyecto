@@ -537,7 +537,7 @@ def resolver_modelo(modelo):
     if modelo.status == GRB.OPTIMAL:
         print("Valor óptimo:", modelo.ObjVal)
     elif modelo.status == GRB.INFEASIBLE:
-        print('toi aqui')
+        # print('toi aqui')
         print("El modelo es infactible.")
         modelo.computeIIS()
         modelo.write("modelo_inviable.ilp")

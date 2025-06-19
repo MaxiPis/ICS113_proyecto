@@ -250,9 +250,9 @@ def run():
     #               ["caneria", "comuna", "porcentaje_perdida"],
     #               perdidas_canerias_csv(porcentaje_caneria))
 
-    construir_csv("terrenos.csv",
-                  ["comuna", "terreno"],
-                  terrenos_csv())
+    # construir_csv("terrenos.csv",
+    #              ["comuna", "terreno"],
+    #              terrenos_csv())
 
     # construir_csv("costo_arreglar_canerias.csv",
     #               ["caneria", "comuna", "costo_arreglo"],
